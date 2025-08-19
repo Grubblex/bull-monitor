@@ -225,19 +225,14 @@ export class BullMQMetricsFactory {
       };
       this.jobs_waiting.inc(jobLabels, 1);
     });
-    queueEvents.on('failed', async (event) => {
-      const job = await queue.getJob(event.jobId);
-      const errorType = job.stacktrace[job.stacktrace.length - 1]?.match(
-        /^(?<errorType>[^:]+):/,
-      )?.groups?.errorType;
-      const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
-        [LABEL_NAMES.ERROR_TYPE]: errorType,
-        ...labels,
-      };
-      this.jobs_failed.inc(jobLabels, 1);
-      this.recordJobMetrics(jobLabels, STATUS_TYPES.FAILED, job);
-    });
+    queueEvents.on('failed', async (event) => { 
+		const job = await queue.getJob(event.jobId); const jobLabels = {
+			[LABEL_NAMES.JOB_NAME]: job.name, 
+			[LABEL_NAMES.ERROR_TYPE]: job.failedReason ?? 'unknown', ...labels, 
+		}; 
+		this.jobs_failed.inc(jobLabels, 1); 
+		this.recordJobMetrics(jobLabels, STATUS_TYPES.FAILED, job); 
+	});
     queueEvents.on('delayed', async (event) => {
       const job = await queue.getJob(event.jobId);
       const jobLabels = {
