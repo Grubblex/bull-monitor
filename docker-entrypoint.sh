@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CONFIG_FILE=oauth2_proxy.cfg
-STARTUP_COMMAND="node daemon.js"
+STARTUP_COMMAND="node dist/daemon.js"
 OAUTH2_PROXY="./oauth2-proxy"
 LOG_TRANSFORMER="node transform_logs.js"
 
